@@ -1,0 +1,32 @@
+{
+  "id": "scenario_015",
+  "name": "Ambiguous: delay exceeds cover + only alt has HIGH uncertainty (switch-vs-spot-vs-partial)",
+  "tier": "ambiguous",
+  "input": {
+    "sku": "SKU-O1500",
+    "stock_pct": 0.20,
+    "hours_to_stockout": 96,
+    "primary_supplier": {
+      "name": "Established Sourcing Co",
+      "delay_days": 5,
+      "reliability_score": 0.86,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "Newentrant Industrial", "lead_time_days": 3, "unit_cost_pct_baseline": 1.25, "uncertainty": "HIGH"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Apex Tooling", "tier": "GOLD", "hours_to_deadline": 72}
+    ],
+    "price_spike_pct": 0.06
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "partial_order", "emergency_spot_buy"],
+    "acceptable_suppliers": ["Newentrant Industrial"],
+    "severity": "HIGH",
+    "confidence_range": ["MEDIUM", "LOW"],
+    "swing_condition_keyword_hints": ["HIGH", "uncertainty", "cold-start", "test", "spot"]
+  },
+  "rubric_notes": "Delay (120h) exceeds cover (96h) → Rule 2 fires immediate_switch canonical. BUT the only alternative has HIGH uncertainty — a cold-start supplier ChainPilot has no history with. Three actions are defensible: immediate_switch (no other option that meets timing; accept the supplier risk), partial_order (test the supplier with smaller volume; bridge with whatever stock remains), emergency_spot_buy (spot-market for the bridge while sourcing structurally — but the 25% premium on Newentrant is already at spot levels). GOLD customer at 72h is below the 120h delay window → material risk. Severity HIGH. Confidence MEDIUM or LOW depending on how aggressively the Arbiter surfaces the HIGH-uncertainty caveat. This scenario tests whether the system rightly distinguishes 'I have to act' from 'I trust this supplier.' Worth flagging that this scenario also informs the Uncertainty badge — the system should explicitly call out the cold-start status."
+}

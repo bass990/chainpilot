@@ -1,0 +1,32 @@
+{
+  "id": "scenario_020",
+  "name": "Edge: 4h to stockout + only alt has 10-day lead (switch + spot bridge)",
+  "tier": "edge",
+  "input": {
+    "sku": "SKU-T2000",
+    "stock_pct": 0.03,
+    "hours_to_stockout": 4,
+    "primary_supplier": {
+      "name": "DistantOcean Sourcing",
+      "delay_days": 30,
+      "reliability_score": 0.75,
+      "uncertainty": "MEDIUM"
+    },
+    "alternative_suppliers": [
+      {"name": "FarShore Alt Mfg", "lead_time_days": 10, "unit_cost_pct_baseline": 1.15, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Continental Production", "tier": "GOLD", "hours_to_deadline": 16}
+    ],
+    "price_spike_pct": 0.12
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "emergency_spot_buy"],
+    "acceptable_suppliers": ["FarShore Alt Mfg"],
+    "severity": "CRITICAL",
+    "confidence_range": ["MEDIUM"],
+    "swing_condition_keyword_hints": ["bridge", "lead", "spot", "stockout", "FarShore"]
+  },
+  "rubric_notes": "4h to stockout — Rule 1 fires immediate_switch (stock_imminent + has_alt). BUT FarShore's 10-day lead can't physically arrive before stockout in 4h, OR before the GOLD deadline in 16h. The right system behavior: place the FarShore order AND engage spot market as a bridge for the 10-day gap. emergency_spot_buy is acceptable as a primary action in its own right (rule 1's prose says 'a viable alternative exists' but doesn't promise it can deliver in time). Severity CRITICAL via the <24h-stockout rule. Confidence MEDIUM because the switch-and-spot combo is a nuanced call — high confidence would suggest the Arbiter didn't recognize the timing problem with the alt's lead time."
+}

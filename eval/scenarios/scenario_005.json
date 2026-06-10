@@ -1,0 +1,33 @@
+{
+  "id": "scenario_005",
+  "name": "Clear-Act: niche SKU + 8h stockout + PLATINUM + GOLD + specialty alternative (30% premium)",
+  "tier": "clear_act",
+  "input": {
+    "sku": "SKU-E500",
+    "stock_pct": 0.06,
+    "hours_to_stockout": 8,
+    "primary_supplier": {
+      "name": "Yamashita Precision",
+      "delay_days": 25,
+      "reliability_score": 0.90,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "SpecialtyMfg Group", "lead_time_days": 3, "unit_cost_pct_baseline": 1.30, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "BlueRidge Aerospace", "tier": "PLATINUM", "hours_to_deadline": 12},
+      {"customer": "Summit Defense",      "tier": "GOLD",     "hours_to_deadline": 14}
+    ],
+    "price_spike_pct": 0.08
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "emergency_spot_buy"],
+    "acceptable_suppliers": ["SpecialtyMfg Group"],
+    "severity": "CRITICAL",
+    "confidence_range": ["HIGH", "MEDIUM"],
+    "swing_condition_keyword_hints": ["BlueRidge", "PLATINUM", "specialty", "premium"]
+  },
+  "rubric_notes": "8h stockout, PLATINUM order in 12h, only one specialty alternative (30% premium, 3-day lead). The premium is real but the stockout is unavoidable without action. Specialty SKUs often have very thin alternative pools — that's why this remains Clear-Act despite the cost. Severity CRITICAL via the PLATINUM-in-<24h rule. Confidence MEDIUM if the Arbiter rightly hesitates over the 30% premium; HIGH if it weighs PLATINUM exposure more heavily. emergency_spot_buy is acceptable as a complement because specialty markets often have a spot tier that competes with SpecialtyMfg's quote."
+}

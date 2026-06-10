@@ -1,0 +1,30 @@
+{
+  "id": "scenario_006",
+  "name": "Clear-Wait: 30-day stock cover + 3-day primary delay + no customer at risk",
+  "tier": "clear_wait",
+  "input": {
+    "sku": "SKU-F600",
+    "stock_pct": 0.85,
+    "hours_to_stockout": 720,
+    "primary_supplier": {
+      "name": "Continental Standard",
+      "delay_days": 3,
+      "reliability_score": 0.92,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "RegionalAlt Inc", "lead_time_days": 5, "unit_cost_pct_baseline": 1.30, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [],
+    "price_spike_pct": 0.0
+  },
+  "expected": {
+    "action_class": "wait_and_monitor",
+    "acceptable_actions": ["wait_and_monitor"],
+    "acceptable_suppliers": [],
+    "severity": "LOW",
+    "confidence_range": ["HIGH"],
+    "swing_condition_keyword_hints": ["cover", "delay", "bounded"]
+  },
+  "rubric_notes": "Stock cover 720h >> 3-day (72h) delay. Alternative is 30% more expensive with MEDIUM uncertainty — switching is unjustified. No customer orders at risk. The wait_and_monitor call is overdetermined: bounded delay + comfortable cover + no customer pressure. Severity LOW (bounded delay well within cover, no material risk). Confidence HIGH because the Skeptic has nothing coherent to argue."
+}

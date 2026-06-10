@@ -1,0 +1,31 @@
+{
+  "id": "scenario_009",
+  "name": "Clear-Wait: short 2-day delay + 15% transient price spike + 14-day stock cover",
+  "tier": "clear_wait",
+  "input": {
+    "sku": "SKU-I900",
+    "stock_pct": 0.55,
+    "hours_to_stockout": 336,
+    "primary_supplier": {
+      "name": "Heritage Sourcing",
+      "delay_days": 2,
+      "reliability_score": 0.90,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "Decent Alt 1", "lead_time_days": 4, "unit_cost_pct_baseline": 1.10, "uncertainty": "MEDIUM"},
+      {"name": "Decent Alt 2", "lead_time_days": 5, "unit_cost_pct_baseline": 1.12, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [],
+    "price_spike_pct": 0.15
+  },
+  "expected": {
+    "action_class": "wait_and_monitor",
+    "acceptable_actions": ["wait_and_monitor"],
+    "acceptable_suppliers": [],
+    "severity": "LOW",
+    "confidence_range": ["HIGH", "MEDIUM"],
+    "swing_condition_keyword_hints": ["spike", "transient", "cover", "revert"]
+  },
+  "rubric_notes": "Short delay (48h) vs 14-day cover. The 15% price spike is the temptation to act, but switching to a 10-12% premium alt to avoid a 15% spike is barely break-even — AND locks in a commitment that loses value if the spike reverts (commodity spot spikes often revert within days). No customer orders at risk. Confidence HIGH if the Arbiter distinguishes spot from structural pricing; MEDIUM if it treats the spike as if it were structural. The acceptable_suppliers list is empty per the wait-and-monitor framing."
+}

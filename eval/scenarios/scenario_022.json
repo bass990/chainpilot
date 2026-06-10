@@ -1,0 +1,33 @@
+{
+  "id": "scenario_022",
+  "name": "Adversarial: cold-start supplier (HIGH uncertainty, no history) + multiple PLATINUM customers",
+  "tier": "adversarial",
+  "input": {
+    "sku": "SKU-V2200",
+    "stock_pct": 0.18,
+    "hours_to_stockout": 30,
+    "primary_supplier": {
+      "name": "Established Continental Corp",
+      "delay_days": 14,
+      "reliability_score": 0.80,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "NewMarket Entrant LLC", "lead_time_days": 4, "unit_cost_pct_baseline": 1.20, "uncertainty": "HIGH"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Defense Tier One", "tier": "PLATINUM", "hours_to_deadline": 40},
+      {"customer": "Defense Tier Two", "tier": "PLATINUM", "hours_to_deadline": 56}
+    ],
+    "price_spike_pct": 0.10
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "partial_order", "emergency_spot_buy"],
+    "acceptable_suppliers": ["NewMarket Entrant LLC"],
+    "severity": "CRITICAL",
+    "confidence_range": ["MEDIUM", "LOW"],
+    "swing_condition_keyword_hints": ["cold-start", "HIGH", "uncertainty", "PLATINUM", "untested"]
+  },
+  "rubric_notes": "Rule 2 fires immediate_switch mechanically (delay 336h >> 30h cover, has_alt=true). But NewMarket Entrant is HIGH uncertainty — a cold-start supplier with no history. Committing two PLATINUM relationships to a never-tested supplier is high-risk. acceptable_actions tolerates: immediate_switch (no other choice that meets timing), partial_order (test the supplier with smaller volume), emergency_spot_buy (spot bridge while structurally re-sourcing). The eval question: does the Arbiter EXPLICITLY surface the cold-start concern in swing_condition, or does it just say 'switch to NewMarket Entrant' without acknowledging the supplier risk? Severity CRITICAL via stockout-imminent (30h is borderline ≥24h, fall back to HIGH-tier-at-risk in <48h rule which fires for the 40h PLATINUM). Confidence MEDIUM-LOW because the cold-start tension is real."
+}

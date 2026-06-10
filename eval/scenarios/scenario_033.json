@@ -1,0 +1,30 @@
+{
+  "id": "scenario_033",
+  "name": "Distribution shift: primary supplier reliability_score = 0.0 (zero historical reliability)",
+  "tier": "distribution_shift",
+  "input": {
+    "sku": "SKU-GG3300",
+    "stock_pct": 0.80,
+    "hours_to_stockout": 400,
+    "primary_supplier": {
+      "name": "Zero-Track-Record Sourcing",
+      "delay_days": 3,
+      "reliability_score": 0.0,
+      "uncertainty": "HIGH"
+    },
+    "alternative_suppliers": [
+      {"name": "Known-Quantity Alt", "lead_time_days": 5, "unit_cost_pct_baseline": 1.18, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [],
+    "price_spike_pct": 0.02
+  },
+  "expected": {
+    "action_class": "wait_and_monitor",
+    "acceptable_actions": ["wait_and_monitor", "partial_order", "immediate_switch"],
+    "acceptable_suppliers": ["Known-Quantity Alt"],
+    "severity": "MEDIUM",
+    "confidence_range": ["MEDIUM", "LOW"],
+    "swing_condition_keyword_hints": ["reliability", "zero", "history", "trust"]
+  },
+  "rubric_notes": "Primary supplier reliability_score=0.0 — schema permits (Field ge=0.0). The rubric's action rules don't currently weight reliability_score directly; only delay-vs-cover and customer pressure drive action selection. With comfortable stock cover (400h) and bounded delay (72h) and no customers at risk, the rubric's deterministic canonical is wait_and_monitor. But: a 0.0 reliability score is a profound signal that the system should rationally NOT trust the primary. The eval question: does the LLM pipeline OVERRIDE the rubric's wait-and-monitor recommendation because the reliability data is so adverse? Or does it stick to the rubric's mechanical answer? Both are defensible (the rubric isn't perfect; the eval may surface that reliability should weigh more); acceptable_actions tolerates wait, partial (hedge), and immediate_switch (don't trust the data). Confidence MEDIUM-LOW because there's a real tension between the structured data (rubric says wait) and the procurement intuition (this primary is a coin flip). Severity MEDIUM because the situation isn't acute but the structural signal is bad."
+}

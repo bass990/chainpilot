@@ -1,0 +1,34 @@
+{
+  "id": "scenario_034",
+  "name": "Distribution shift: three alternative suppliers with IDENTICAL specs (tiebreaker test)",
+  "tier": "distribution_shift",
+  "input": {
+    "sku": "SKU-HH3400",
+    "stock_pct": 0.25,
+    "hours_to_stockout": 96,
+    "primary_supplier": {
+      "name": "Reliable Primary Co",
+      "delay_days": 5,
+      "reliability_score": 0.82,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "Identical Alt One",   "lead_time_days": 3, "unit_cost_pct_baseline": 1.15, "uncertainty": "MEDIUM"},
+      {"name": "Identical Alt Two",   "lead_time_days": 3, "unit_cost_pct_baseline": 1.15, "uncertainty": "MEDIUM"},
+      {"name": "Identical Alt Three", "lead_time_days": 3, "unit_cost_pct_baseline": 1.15, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Routine Industrial Customer", "tier": "GOLD", "hours_to_deadline": 80}
+    ],
+    "price_spike_pct": 0.04
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "partial_order"],
+    "acceptable_suppliers": ["Identical Alt One", "Identical Alt Two", "Identical Alt Three"],
+    "severity": "HIGH",
+    "confidence_range": ["HIGH", "MEDIUM"],
+    "swing_condition_keyword_hints": ["identical", "specs", "arbitrary", "tiebreaker"]
+  },
+  "rubric_notes": "Rule 2 fires (delay 120h > 96h cover, has_alt). Three alternative suppliers have EXACTLY identical specs (lead_time=3d, cost=1.15×, uncertainty=MEDIUM) — distinguishable only by name. The eval question: how does the system break the tie? Specific failure modes: (a) Arbiter arbitrarily picks the first one without acknowledging the tie, (b) confidence reported HIGH despite the genuine tie (the choice is non-deterministic across runs), (c) recommendation flips across the 3 reps revealing the system's inability to commit when the composite score is tied. A robust response: acknowledge the tie, surface in swing_condition that any of the three is equivalent, possibly recommend splitting the order across them as a partial_order (treating each as a sub-volume). acceptable_suppliers lists all three because any is rubric-acceptable. Severity HIGH via delay > cover + GOLD pressure."
+}

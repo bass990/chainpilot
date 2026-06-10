@@ -1,0 +1,28 @@
+{
+  "id": "scenario_017",
+  "name": "Edge: no alternatives + delay bounded within cover (default wait)",
+  "tier": "edge",
+  "input": {
+    "sku": "SKU-Q1700",
+    "stock_pct": 0.70,
+    "hours_to_stockout": 360,
+    "primary_supplier": {
+      "name": "MonopolyParts Ltd",
+      "delay_days": 3,
+      "reliability_score": 0.91,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [],
+    "customer_orders_at_risk": [],
+    "price_spike_pct": 0.0
+  },
+  "expected": {
+    "action_class": "wait_and_monitor",
+    "acceptable_actions": ["wait_and_monitor"],
+    "acceptable_suppliers": [],
+    "severity": "LOW",
+    "confidence_range": ["HIGH"],
+    "swing_condition_keyword_hints": ["bounded", "cover", "wait", "monopoly"]
+  },
+  "rubric_notes": "Sole-source SKU but with comfortable cover (360h) and bounded delay (72h). 'No alternatives' is not a catastrophic state when there's nothing to act on — the rubric's no-alt edge case is asymmetric (only matters when delay > cover). This scenario tests that the system doesn't conflate 'sole-source' with 'must engage spot market.' Reliable primary supplier (LOW uncertainty + 0.91 reliability) further argues against premature action. No customer at risk. Severity LOW; confidence HIGH."
+}

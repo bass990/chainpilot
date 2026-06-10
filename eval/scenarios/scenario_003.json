@@ -1,0 +1,33 @@
+{
+  "id": "scenario_003",
+  "name": "Clear-Act: primary supplier 60-day shutdown + 2 GOLD customers at risk + reliable alternative",
+  "tier": "clear_act",
+  "input": {
+    "sku": "SKU-C300",
+    "stock_pct": 0.10,
+    "hours_to_stockout": 16,
+    "primary_supplier": {
+      "name": "NorthShore Components",
+      "delay_days": 60,
+      "reliability_score": 0.65,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "ReliablePartners", "lead_time_days": 4, "unit_cost_pct_baseline": 1.12, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Helix Engineering",  "tier": "GOLD", "hours_to_deadline": 20},
+      {"customer": "Crossroads Mfg",     "tier": "GOLD", "hours_to_deadline": 28}
+    ],
+    "price_spike_pct": 0.05
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch"],
+    "acceptable_suppliers": ["ReliablePartners"],
+    "severity": "CRITICAL",
+    "confidence_range": ["HIGH", "MEDIUM"],
+    "swing_condition_keyword_hints": ["GOLD", "customer", "shutdown", "primary"]
+  },
+  "rubric_notes": "Primary supplier effectively down (60-day delay). 16h to stockout. ReliablePartners has LOW uncertainty, 4-day lead, 12% premium — the obvious right answer. Two GOLD customers at risk; the stockout would breach the first deadline (20h) by hours. Severity CRITICAL via the <24h-stockout rule. Confidence HIGH if the Arbiter integrates the customer-deadline pressure correctly; MEDIUM is defensible if a Skeptic argues that two GOLDs (no PLATINUMs) is borderline."
+}

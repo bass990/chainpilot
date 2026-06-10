@@ -1,0 +1,33 @@
+{
+  "id": "scenario_021",
+  "name": "Edge: customer-tier extreme — only STANDARD customers + delay slightly exceeds cover",
+  "tier": "edge",
+  "input": {
+    "sku": "SKU-U2100",
+    "stock_pct": 0.20,
+    "hours_to_stockout": 100,
+    "primary_supplier": {
+      "name": "Routine Industrial",
+      "delay_days": 5,
+      "reliability_score": 0.83,
+      "uncertainty": "MEDIUM"
+    },
+    "alternative_suppliers": [
+      {"name": "AdequateAlt Co", "lead_time_days": 4, "unit_cost_pct_baseline": 1.14, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Generic Distribution One", "tier": "STANDARD", "hours_to_deadline": 110},
+      {"customer": "Generic Distribution Two", "tier": "STANDARD", "hours_to_deadline": 130}
+    ],
+    "price_spike_pct": 0.04
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "wait_and_monitor"],
+    "acceptable_suppliers": ["AdequateAlt Co"],
+    "severity": "MEDIUM",
+    "confidence_range": ["MEDIUM"],
+    "swing_condition_keyword_hints": ["STANDARD", "tier", "brief", "stockout", "tolerable"]
+  },
+  "rubric_notes": "Delay (120h) just barely exceeds cover (100h) → Rule 2 fires immediate_switch. But the only customers at risk are STANDARD-tier, AND their deadlines (110h, 130h) are within reach if stockout is brief (~20h gap between cover depletion and primary recovery). A 20-hour stockout with only STANDARD-tier exposure is a defensibly tolerable outcome — wait_and_monitor with accepted brief stockout is rational. acceptable_actions tolerates both. This scenario tests whether the system rightly distinguishes 'rule fires' from 'rule's underlying economics make sense.' Severity MEDIUM (delay exceeds but no high-tier pressure). Confidence MEDIUM because the switch-vs-tolerate-brief-stockout is a genuine tradeoff for low-stakes customers."
+}

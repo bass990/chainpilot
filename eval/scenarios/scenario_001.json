@@ -1,0 +1,33 @@
+{
+  "id": "scenario_001",
+  "name": "Clear-Act: critical stockout + 30-day primary delay + PLATINUM customer + two alternatives",
+  "tier": "clear_act",
+  "input": {
+    "sku": "SKU-A100",
+    "stock_pct": 0.05,
+    "hours_to_stockout": 4.5,
+    "primary_supplier": {
+      "name": "PrecisionParts Co.",
+      "delay_days": 30,
+      "reliability_score": 0.85,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "FastBear Mfg",   "lead_time_days": 3, "unit_cost_pct_baseline": 1.18, "uncertainty": "HIGH"},
+      {"name": "GlobalParts",    "lead_time_days": 6, "unit_cost_pct_baseline": 1.10, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Apex Manufacturing", "tier": "PLATINUM", "hours_to_deadline": 9}
+    ],
+    "price_spike_pct": 0.107
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "emergency_spot_buy"],
+    "acceptable_suppliers": ["FastBear Mfg", "GlobalParts"],
+    "severity": "CRITICAL",
+    "confidence_range": ["HIGH", "MEDIUM"],
+    "swing_condition_keyword_hints": ["customer", "PLATINUM", "deadline", "stockout"]
+  },
+  "rubric_notes": "Stock cover is 4.5h; neither alternative can deliver before stockout (FastBear 72h, GlobalParts 144h lead times). A brief stockout is unavoidable. The right call is still immediate_switch — order from the best alternative to end the disruption window — with possible spot-market sourcing as a complement (so emergency_spot_buy is also acceptable). FastBear preferred on lead time; GlobalParts preferred if uncertainty weight dominates. PLATINUM customer at risk in <24h + stockout <24h = CRITICAL severity (RUBRIC §3, two reinforcing triggers)."
+}

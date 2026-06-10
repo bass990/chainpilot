@@ -1,0 +1,32 @@
+{
+  "id": "scenario_002",
+  "name": "Clear-Act: 12-hour stockout + PLATINUM customer + one fast alternative",
+  "tier": "clear_act",
+  "input": {
+    "sku": "SKU-B200",
+    "stock_pct": 0.08,
+    "hours_to_stockout": 12,
+    "primary_supplier": {
+      "name": "MidwestSupply Inc.",
+      "delay_days": 14,
+      "reliability_score": 0.78,
+      "uncertainty": "MEDIUM"
+    },
+    "alternative_suppliers": [
+      {"name": "QuickMfg LLC", "lead_time_days": 2, "unit_cost_pct_baseline": 1.22, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Vanguard Industries", "tier": "PLATINUM", "hours_to_deadline": 18}
+    ],
+    "price_spike_pct": 0.03
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch"],
+    "acceptable_suppliers": ["QuickMfg LLC"],
+    "severity": "CRITICAL",
+    "confidence_range": ["HIGH"],
+    "swing_condition_keyword_hints": ["Vanguard", "PLATINUM", "stockout"]
+  },
+  "rubric_notes": "12h stockout vs PLATINUM order in 18h: stockout will hit before customer deadline. QuickMfg's 48h lead won't beat stockout, but it ends the 14-day primary delay quickly. Single defensible action: immediate_switch. The acceptable_actions list is intentionally singleton — there's no reasonable alternate framing. Severity CRITICAL on both the <24h stockout rule AND the PLATINUM-in-<24h rule. Confidence HIGH because the Skeptic has no coherent counter-argument."
+}

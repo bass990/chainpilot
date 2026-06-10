@@ -1,0 +1,32 @@
+{
+  "id": "scenario_008",
+  "name": "Clear-Wait: 4-day delay + 7-day cover + only STANDARD customer exposure",
+  "tier": "clear_wait",
+  "input": {
+    "sku": "SKU-H800",
+    "stock_pct": 0.45,
+    "hours_to_stockout": 168,
+    "primary_supplier": {
+      "name": "Industrial Standard Inc",
+      "delay_days": 4,
+      "reliability_score": 0.85,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "OKChoice Mfg", "lead_time_days": 6, "unit_cost_pct_baseline": 1.15, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Bayside Wholesale", "tier": "STANDARD", "hours_to_deadline": 96}
+    ],
+    "price_spike_pct": 0.0
+  },
+  "expected": {
+    "action_class": "wait_and_monitor",
+    "acceptable_actions": ["wait_and_monitor"],
+    "acceptable_suppliers": [],
+    "severity": "LOW",
+    "confidence_range": ["HIGH", "MEDIUM"],
+    "swing_condition_keyword_hints": ["STANDARD", "tier", "cover"]
+  },
+  "rubric_notes": "Delay (96h) is comfortably within stock cover (168h). The STANDARD customer order at 96h deadline is fulfillable from current stock. STANDARD-tier exposure does not by itself trigger CRITICAL/HIGH severity per RUBRIC §3 (no tier-up rule). The 15% premium on OKChoice isn't worth it given the small risk. Confidence HIGH on the wait call; MEDIUM is acceptable if the Arbiter wants to flag that customer-tier weights sometimes get re-assessed in production."
+}

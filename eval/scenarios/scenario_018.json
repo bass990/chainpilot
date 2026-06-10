@@ -1,0 +1,34 @@
+{
+  "id": "scenario_018",
+  "name": "Edge: customer-tier extreme — three PLATINUM orders concurrently at risk + 2-week delay",
+  "tier": "edge",
+  "input": {
+    "sku": "SKU-R1800",
+    "stock_pct": 0.25,
+    "hours_to_stockout": 36,
+    "primary_supplier": {
+      "name": "TransPacific Sourcing",
+      "delay_days": 14,
+      "reliability_score": 0.80,
+      "uncertainty": "MEDIUM"
+    },
+    "alternative_suppliers": [
+      {"name": "Rapid Alternative Mfg", "lead_time_days": 3, "unit_cost_pct_baseline": 1.20, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Defense Systems One",  "tier": "PLATINUM", "hours_to_deadline": 20},
+      {"customer": "Defense Systems Two",  "tier": "PLATINUM", "hours_to_deadline": 28},
+      {"customer": "Defense Systems Three","tier": "PLATINUM", "hours_to_deadline": 36}
+    ],
+    "price_spike_pct": 0.08
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch"],
+    "acceptable_suppliers": ["Rapid Alternative Mfg"],
+    "severity": "CRITICAL",
+    "confidence_range": ["HIGH"],
+    "swing_condition_keyword_hints": ["PLATINUM", "three", "exposure", "concentrated"]
+  },
+  "rubric_notes": "Concentrated PLATINUM exposure — three PLATINUM customers all at risk, one within the <24h imminent rule (Defense Systems One at 20h). Cover (36h) just barely exceeds the imminent threshold. Delay (336h = 14 days) >> cover. Multiple rules fire (1, 2, 3); all converge on immediate_switch. acceptable_actions intentionally singleton because partial_order doesn't credibly cover three PLATINUM orders with one alt. Severity CRITICAL via both <24h-stockout proximity AND PLATINUM-in-<24h. Confidence HIGH — no reasonable counter-argument. Worth flagging that the eval should check whether the Arbiter explicitly notes the CONCENTRATION of PLATINUMs (vs treating it as a single PLATINUM event) — concentration risk should be in the swing_condition narrative."
+}

@@ -1,0 +1,31 @@
+{
+  "id": "scenario_007",
+  "name": "Clear-Wait: alternatives much worse (45-50% premium + HIGH uncertainty) + 15-day cover",
+  "tier": "clear_wait",
+  "input": {
+    "sku": "SKU-G700",
+    "stock_pct": 0.60,
+    "hours_to_stockout": 360,
+    "primary_supplier": {
+      "name": "Pacific Supply Group",
+      "delay_days": 5,
+      "reliability_score": 0.88,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "NewSupplier1", "lead_time_days":  8, "unit_cost_pct_baseline": 1.45, "uncertainty": "HIGH"},
+      {"name": "NewSupplier2", "lead_time_days": 10, "unit_cost_pct_baseline": 1.50, "uncertainty": "HIGH"}
+    ],
+    "customer_orders_at_risk": [],
+    "price_spike_pct": 0.02
+  },
+  "expected": {
+    "action_class": "wait_and_monitor",
+    "acceptable_actions": ["wait_and_monitor"],
+    "acceptable_suppliers": [],
+    "severity": "LOW",
+    "confidence_range": ["HIGH"],
+    "swing_condition_keyword_hints": ["alternatives", "uncertainty", "cost", "inferior"]
+  },
+  "rubric_notes": "5-day delay vs 360h (15-day) cover. Both alternatives have HIGH uncertainty AND 45-50% cost premium — switching is the wrong call by every dimension. No customer orders at risk. The right system behavior is explicit rejection: 'we considered switching, but the alternatives are worse.' Confidence HIGH — Advocate has no defensible case. acceptable_suppliers is intentionally empty because the rubric says no supplier should be recommended in a wait-and-monitor scenario."
+}

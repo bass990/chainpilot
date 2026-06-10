@@ -1,0 +1,33 @@
+{
+  "id": "scenario_026",
+  "name": "Adversarial: decision-flip sensitivity — every variable right at its threshold",
+  "tier": "adversarial",
+  "input": {
+    "sku": "SKU-Z2600",
+    "stock_pct": 0.25,
+    "hours_to_stockout": 72,
+    "primary_supplier": {
+      "name": "Threshold Industrial",
+      "delay_days": 3,
+      "reliability_score": 0.85,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "SteadyChoice Co", "lead_time_days": 2, "unit_cost_pct_baseline": 1.12, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Boundary Defense Systems", "tier": "PLATINUM", "hours_to_deadline": 60},
+      {"customer": "Gold Engineering",         "tier": "GOLD",     "hours_to_deadline": 80}
+    ],
+    "price_spike_pct": 0.05
+  },
+  "expected": {
+    "action_class": "partial_order",
+    "acceptable_actions": ["partial_order", "immediate_switch"],
+    "acceptable_suppliers": ["SteadyChoice Co"],
+    "severity": "HIGH",
+    "confidence_range": ["MEDIUM", "LOW"],
+    "swing_condition_keyword_hints": ["threshold", "boundary", "perturbation", "PLATINUM", "sensitive"]
+  },
+  "rubric_notes": "Every variable sits at a rubric threshold: stock_pct 0.25 (mid), cover 72h (HIGH-band boundary), delay 72h (== cover boundary, doesn't fire Rule 2 by strict >), PLATINUM at 60h (>24h so Rule 3 doesn't fire, but Rule 5 catches it as material risk at 60 < 72). Rule 5 fires partial_order. Any 1-hour perturbation in delay, cover, or PLATINUM deadline could flip the canonical action. This scenario tests decision stability: does the LLM pipeline give the same answer if the same scenario is presented twice (within stochasticity), or does the boundary-position lead to high-variance outputs? It also tests boundary-awareness: a good Arbiter should mention 'this decision is sensitive to assumptions' in the swing_condition. acceptable_actions tolerates immediate_switch (defensive switch given PLATINUM exposure on a boundary case). Confidence MEDIUM-LOW because the boundary positioning is real."
+}

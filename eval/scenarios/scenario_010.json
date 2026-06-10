@@ -1,0 +1,32 @@
+{
+  "id": "scenario_010",
+  "name": "Clear-Wait: 7-day delay + 21-day stock cover + GOLD customer with 10-day deadline",
+  "tier": "clear_wait",
+  "input": {
+    "sku": "SKU-J1000",
+    "stock_pct": 0.70,
+    "hours_to_stockout": 504,
+    "primary_supplier": {
+      "name": "TransGlobal Components",
+      "delay_days": 7,
+      "reliability_score": 0.86,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "BackupChoice Ltd", "lead_time_days": 5, "unit_cost_pct_baseline": 1.12, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Northwest Manufacturing", "tier": "GOLD", "hours_to_deadline": 240}
+    ],
+    "price_spike_pct": 0.03
+  },
+  "expected": {
+    "action_class": "wait_and_monitor",
+    "acceptable_actions": ["wait_and_monitor"],
+    "acceptable_suppliers": [],
+    "severity": "LOW",
+    "confidence_range": ["HIGH", "MEDIUM"],
+    "swing_condition_keyword_hints": ["GOLD", "deadline", "cover"]
+  },
+  "rubric_notes": "7-day delay (168h) is well within 21-day stock cover (504h). GOLD customer deadline (240h) lands AFTER primary supplier's expected recovery — the order is fulfillable from current/restocked inventory. BackupChoice exists but switching costs 12% more for no actual coverage benefit given the comfortable cover. Confidence HIGH on wait; MEDIUM is acceptable if the Arbiter wants to surface that GOLD-customer exposure could justify hedging as defensive insurance."
+}

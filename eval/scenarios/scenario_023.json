@@ -1,0 +1,32 @@
+{
+  "id": "scenario_023",
+  "name": "Adversarial: numerical boundary — delay exactly equals stock cover (120 == 120)",
+  "tier": "adversarial",
+  "input": {
+    "sku": "SKU-W2300",
+    "stock_pct": 0.40,
+    "hours_to_stockout": 120,
+    "primary_supplier": {
+      "name": "Tidewater Industrial",
+      "delay_days": 5,
+      "reliability_score": 0.88,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "ReliableBackup Mfg", "lead_time_days": 3, "unit_cost_pct_baseline": 1.12, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Highland Manufacturing", "tier": "GOLD", "hours_to_deadline": 96}
+    ],
+    "price_spike_pct": 0.04
+  },
+  "expected": {
+    "action_class": "partial_order",
+    "acceptable_actions": ["partial_order", "wait_and_monitor", "immediate_switch"],
+    "acceptable_suppliers": ["ReliableBackup Mfg"],
+    "severity": "MEDIUM",
+    "confidence_range": ["MEDIUM", "LOW"],
+    "swing_condition_keyword_hints": ["boundary", "exactly", "120", "delay", "cover"]
+  },
+  "rubric_notes": "delay_days × 24 = 120 EXACTLY equals hours_to_stockout. Rule 2's condition is `delay > cover` (strict >, not >=) — so 120 > 120 is False and Rule 2 does NOT fire. This is a deliberate design choice in the rubric. Rule 5 fires instead: GOLD at material risk (96 < 120) + LOW alt → partial_order canonical. acceptable_actions tolerates wait_and_monitor (delay JUST barely doesn't exceed cover) and immediate_switch (any further slip in primary's delay flips the catastrophe — defensive switch is rational). The eval question: does the LLM pipeline treat delay==cover differently from delay > cover by even one hour, or does it (correctly) treat the boundary as a continuous decision space? A confidently chosen immediate_switch here is fine; a confidently chosen wait is fragile. Confidence MEDIUM-LOW because the threshold sensitivity is real."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "scenario_025",
+  "name": "Adversarial: conflicting customer signals (PLATINUM far-future + STANDARD imminent)",
+  "tier": "adversarial",
+  "input": {
+    "sku": "SKU-Y2500",
+    "stock_pct": 0.25,
+    "hours_to_stockout": 96,
+    "primary_supplier": {
+      "name": "Pacific Components",
+      "delay_days": 5,
+      "reliability_score": 0.82,
+      "uncertainty": "MEDIUM"
+    },
+    "alternative_suppliers": [
+      {"name": "ReliableSupply Inc", "lead_time_days": 3, "unit_cost_pct_baseline": 1.15, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Future Aerospace Plans",        "tier": "PLATINUM", "hours_to_deadline": 200},
+      {"customer": "Generic Distribution Channel",  "tier": "STANDARD", "hours_to_deadline": 12}
+    ],
+    "price_spike_pct": 0.05
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "wait_and_monitor", "partial_order"],
+    "acceptable_suppliers": ["ReliableSupply Inc"],
+    "severity": "HIGH",
+    "confidence_range": ["MEDIUM"],
+    "swing_condition_keyword_hints": ["PLATINUM", "STANDARD", "tier", "200", "12", "weight"]
+  },
+  "rubric_notes": "Tension: PLATINUM customer at 200h deadline = NOT at risk (200 > 120 delay; their order fulfills from recovered primary). STANDARD customer at 12h = imminent but low tier — the rubric's §3 severity rules deliberately don't elevate STANDARD-tier exposure. Rule 2 fires immediate_switch (delay 120 > cover 96, has alt). The eval question: does the LLM pipeline correctly recognize that the PLATINUM isn't actually at risk (despite being the heaviest tier present) AND that the STANDARD's imminent deadline doesn't warrant emergency action just because the deadline is close? Or does it confuse 'imminent deadline' with 'high-tier exposure'? acceptable_actions tolerates wait_and_monitor (if the system rightly weights STANDARD low) and partial_order (hedge the STANDARD without committing the full switch). Severity HIGH via delay > cover. The swing_condition should explicitly articulate the tier-vs-timing tradeoff."
+}

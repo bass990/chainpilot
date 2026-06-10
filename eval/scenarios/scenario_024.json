@@ -1,0 +1,32 @@
+{
+  "id": "scenario_024",
+  "name": "Adversarial: numerical boundary — PLATINUM at exactly 24.0 hours to deadline",
+  "tier": "adversarial",
+  "input": {
+    "sku": "SKU-X2400",
+    "stock_pct": 0.35,
+    "hours_to_stockout": 100,
+    "primary_supplier": {
+      "name": "Reliable Industrial Inc",
+      "delay_days": 4,
+      "reliability_score": 0.87,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "BackupChoice Mfg", "lead_time_days": 3, "unit_cost_pct_baseline": 1.15, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Apex Aerospace", "tier": "PLATINUM", "hours_to_deadline": 24}
+    ],
+    "price_spike_pct": 0.03
+  },
+  "expected": {
+    "action_class": "partial_order",
+    "acceptable_actions": ["partial_order", "immediate_switch"],
+    "acceptable_suppliers": ["BackupChoice Mfg"],
+    "severity": "HIGH",
+    "confidence_range": ["MEDIUM", "LOW"],
+    "swing_condition_keyword_hints": ["24", "exactly", "PLATINUM", "boundary", "imminent"]
+  },
+  "rubric_notes": "PLATINUM at EXACTLY 24.0h to deadline. Rule 3 fires when PLATINUM hours_to_deadline < 24 (strict <). 24 < 24 is False → Rule 3 doesn't fire. Reasonable humans would treat 24.0 as imminent; the rubric's strict-< threshold is itself a design tension this scenario probes. Rule 5 fires instead: PLATINUM at material risk (24 < 96) + LOW alt → partial_order canonical. immediate_switch is acceptable because 24.0h is functionally indistinguishable from 23.5h for procurement decisions. The eval question: does the LLM pipeline rightly treat 24.0 as effectively imminent (immediate_switch), or does it mirror the rubric's strict-< boundary (partial_order)? Either is defensible; a confident HIGH-confidence answer would suggest the Arbiter didn't recognize the threshold sensitivity. Severity HIGH per §3 PLATINUM-tier-at-risk-in-<48h rule (24h is well within <48h)."
+}

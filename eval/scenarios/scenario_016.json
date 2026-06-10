@@ -1,0 +1,30 @@
+{
+  "id": "scenario_016",
+  "name": "Edge: no alternatives at all + delay exceeds cover (emergency_spot_buy)",
+  "tier": "edge",
+  "input": {
+    "sku": "SKU-P1600",
+    "stock_pct": 0.30,
+    "hours_to_stockout": 96,
+    "primary_supplier": {
+      "name": "OnlyChoice Industries",
+      "delay_days": 7,
+      "reliability_score": 0.84,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [],
+    "customer_orders_at_risk": [
+      {"customer": "Quartermaster Logistics", "tier": "GOLD", "hours_to_deadline": 80}
+    ],
+    "price_spike_pct": 0.18
+  },
+  "expected": {
+    "action_class": "emergency_spot_buy",
+    "acceptable_actions": ["emergency_spot_buy"],
+    "acceptable_suppliers": [],
+    "severity": "HIGH",
+    "confidence_range": ["HIGH"],
+    "swing_condition_keyword_hints": ["spot", "alternatives", "bridge", "monopoly"]
+  },
+  "rubric_notes": "Sole-source SKU (no alternatives) with delay (168h) exceeding cover (96h). Rule 4 fires unambiguously: delay_exceeds AND no alts → emergency_spot_buy. This tests the rubric's no-alt edge case. The system should NOT name an alternative supplier (acceptable_suppliers intentionally empty); the right action is to engage the spot market for whatever bridge supply is available. GOLD customer at 80h < 168h delay = at material risk; reinforces the urgency. Severity HIGH per delay>cover + GOLD-pressure. Confidence HIGH because there's no other defensible action."
+}

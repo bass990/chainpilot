@@ -1,0 +1,32 @@
+{
+  "id": "scenario_011",
+  "name": "Ambiguous: GOLD customer at material risk + 7-day delay + 10-day cover + reliable alt",
+  "tier": "ambiguous",
+  "input": {
+    "sku": "SKU-K1100",
+    "stock_pct": 0.35,
+    "hours_to_stockout": 240,
+    "primary_supplier": {
+      "name": "Atlantic Standard Co.",
+      "delay_days": 7,
+      "reliability_score": 0.87,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "Reliable Sourcing Ltd", "lead_time_days": 4, "unit_cost_pct_baseline": 1.13, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Crossbeam Industries", "tier": "GOLD", "hours_to_deadline": 144}
+    ],
+    "price_spike_pct": 0.04
+  },
+  "expected": {
+    "action_class": "partial_order",
+    "acceptable_actions": ["partial_order", "wait_and_monitor"],
+    "acceptable_suppliers": ["Reliable Sourcing Ltd"],
+    "severity": "MEDIUM",
+    "confidence_range": ["MEDIUM"],
+    "swing_condition_keyword_hints": ["GOLD", "hedge", "bounded", "deadline"]
+  },
+  "rubric_notes": "GOLD customer deadline (144h) lands BEFORE primary recovery (168h) — order is at material risk if delay materializes as predicted. Stock cover (240h) is greater than delay (168h), so we're not in catastrophic territory; rules 1-4 don't fire. Rule 5 fires: high-tier customer at material risk + reliable LOW-uncertainty alt → partial_order. wait_and_monitor is also defensible — the risk is contingent on the delay actually being 7 days (could resolve sooner). The swing_condition the Arbiter should surface: 'if Atlantic Standard's recovery slips past 7 days, the GOLD order missed.' Confidence MEDIUM because both actions are reasonable; HIGH would indicate the Arbiter didn't recognize the genuine tradeoff."
+}

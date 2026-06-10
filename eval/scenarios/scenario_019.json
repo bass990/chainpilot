@@ -1,0 +1,34 @@
+{
+  "id": "scenario_019",
+  "name": "Edge: uncertainty extreme — all alternatives HIGH uncertainty + GOLD at material risk",
+  "tier": "edge",
+  "input": {
+    "sku": "SKU-S1900",
+    "stock_pct": 0.40,
+    "hours_to_stockout": 200,
+    "primary_supplier": {
+      "name": "Vintage Manufacturing Co",
+      "delay_days": 6,
+      "reliability_score": 0.85,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "Untested Supply One",   "lead_time_days": 4, "unit_cost_pct_baseline": 1.18, "uncertainty": "HIGH"},
+      {"name": "Untested Supply Two",   "lead_time_days": 5, "unit_cost_pct_baseline": 1.22, "uncertainty": "HIGH"},
+      {"name": "Untested Supply Three", "lead_time_days": 7, "unit_cost_pct_baseline": 1.16, "uncertainty": "HIGH"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Foundry Northwest", "tier": "GOLD", "hours_to_deadline": 100}
+    ],
+    "price_spike_pct": 0.06
+  },
+  "expected": {
+    "action_class": "wait_and_monitor",
+    "acceptable_actions": ["wait_and_monitor", "emergency_spot_buy"],
+    "acceptable_suppliers": [],
+    "severity": "MEDIUM",
+    "confidence_range": ["MEDIUM"],
+    "swing_condition_keyword_hints": ["HIGH", "uncertainty", "untested", "spot"]
+  },
+  "rubric_notes": "All three alternatives have HIGH uncertainty — the rubric's 'reliable alt' definition (LOW or MEDIUM uncertainty) is not satisfied. Stock cover (200h) > delay (144h), so rules 1-4 don't fire. Rule 5 requires reliable_alt; the all-HIGH alt pool fails the requirement. Default → wait_and_monitor. But: GOLD customer at material risk (100h < 144h delay) — system might rationally engage spot market (emergency_spot_buy) as a hedge to avoid betting the GOLD relationship on an untested supplier. acceptable_actions tolerates both wait and spot_buy. acceptable_suppliers intentionally empty — recommending an HIGH-uncertainty supplier here would be the wrong system behavior. Confidence MEDIUM because the wait-vs-spot tradeoff is real."
+}

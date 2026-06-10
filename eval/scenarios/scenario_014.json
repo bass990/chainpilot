@@ -1,0 +1,33 @@
+{
+  "id": "scenario_014",
+  "name": "Ambiguous: clean partial_order — 4d delay + 6d cover + GOLD at 84h + 2 reliable alts",
+  "tier": "ambiguous",
+  "input": {
+    "sku": "SKU-N1400",
+    "stock_pct": 0.25,
+    "hours_to_stockout": 144,
+    "primary_supplier": {
+      "name": "Coastal Components Inc",
+      "delay_days": 4,
+      "reliability_score": 0.84,
+      "uncertainty": "MEDIUM"
+    },
+    "alternative_suppliers": [
+      {"name": "Decent Alt One", "lead_time_days": 3, "unit_cost_pct_baseline": 1.12, "uncertainty": "LOW"},
+      {"name": "Decent Alt Two", "lead_time_days": 5, "unit_cost_pct_baseline": 1.10, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Northstar Manufacturing", "tier": "GOLD", "hours_to_deadline": 84}
+    ],
+    "price_spike_pct": 0.05
+  },
+  "expected": {
+    "action_class": "partial_order",
+    "acceptable_actions": ["partial_order"],
+    "acceptable_suppliers": ["Decent Alt One"],
+    "severity": "MEDIUM",
+    "confidence_range": ["MEDIUM"],
+    "swing_condition_keyword_hints": ["GOLD", "deadline", "84", "hedge", "alternative"]
+  },
+  "rubric_notes": "The cleanest partial_order case in this batch. GOLD customer deadline (84h) falls within stock cover (144h) but BEFORE primary recovery (96h delay) — order is at material risk if anything slips further. Cost cover comfortable. Decent Alt One is reliable (LOW) and fast (3 days). Rule 5 fires unambiguously: material customer risk + reliable alt → partial_order. acceptable_actions is intentionally singleton — wait_and_monitor would expose the GOLD order to unnecessary risk, and immediate_switch is over-insurance given comfortable stock. The Arbiter should clearly articulate: 'partial order from Decent Alt covers the GOLD deadline; primary remains preferred for the bulk volume.'"
+}

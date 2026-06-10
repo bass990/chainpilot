@@ -1,0 +1,41 @@
+{
+  "id": "scenario_032",
+  "name": "Distribution shift: 10 concurrent PLATINUM customers (homogeneous high-tier concentration)",
+  "tier": "distribution_shift",
+  "input": {
+    "sku": "SKU-FF3200",
+    "stock_pct": 0.30,
+    "hours_to_stockout": 60,
+    "primary_supplier": {
+      "name": "Strategic Defense Sourcing",
+      "delay_days": 21,
+      "reliability_score": 0.78,
+      "uncertainty": "MEDIUM"
+    },
+    "alternative_suppliers": [
+      {"name": "Tier-One Alt Inc", "lead_time_days": 3, "unit_cost_pct_baseline": 1.18, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Defense Customer A", "tier": "PLATINUM", "hours_to_deadline": 18},
+      {"customer": "Defense Customer B", "tier": "PLATINUM", "hours_to_deadline": 24},
+      {"customer": "Defense Customer C", "tier": "PLATINUM", "hours_to_deadline": 30},
+      {"customer": "Defense Customer D", "tier": "PLATINUM", "hours_to_deadline": 36},
+      {"customer": "Defense Customer E", "tier": "PLATINUM", "hours_to_deadline": 42},
+      {"customer": "Defense Customer F", "tier": "PLATINUM", "hours_to_deadline": 48},
+      {"customer": "Defense Customer G", "tier": "PLATINUM", "hours_to_deadline": 54},
+      {"customer": "Defense Customer H", "tier": "PLATINUM", "hours_to_deadline": 60},
+      {"customer": "Defense Customer I", "tier": "PLATINUM", "hours_to_deadline": 66},
+      {"customer": "Defense Customer J", "tier": "PLATINUM", "hours_to_deadline": 72}
+    ],
+    "price_spike_pct": 0.08
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch"],
+    "acceptable_suppliers": ["Tier-One Alt Inc"],
+    "severity": "CRITICAL",
+    "confidence_range": ["HIGH"],
+    "swing_condition_keyword_hints": ["10", "PLATINUM", "concentration", "tier", "exposure"]
+  },
+  "rubric_notes": "10 concurrent PLATINUM customers with deadlines spanning 18-72h. Rule 1 fires (60h stock_imminent? 60 not < 24, false). Rule 2 fires (delay 504h >> 60h cover + has_alt). Customer A and B are within 24h → Rule 3 also fires. All rules converge on immediate_switch. The distribution shift is the COUNT of PLATINUMs — mock_data normally surfaces 1 customer at risk per disruption; here we have 10. The eval question: does the system summarize the concentration ('10 PLATINUM customers at risk') or list each individually (verbose, less useful)? Does it correctly weight the CONCENTRATION risk above what 10 disconnected scenarios would? Severity CRITICAL via both stockout-imminent (60h is borderline below 72h HIGH band) and concentrated PLATINUM exposure. Confidence HIGH because the action is overdetermined regardless of how the system summarizes the customer list."
+}

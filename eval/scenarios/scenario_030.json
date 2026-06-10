@@ -1,0 +1,32 @@
+{
+  "id": "scenario_030",
+  "name": "Distribution shift: customer order at exactly 0 hours to deadline (already due)",
+  "tier": "distribution_shift",
+  "input": {
+    "sku": "SKU-DD3000",
+    "stock_pct": 0.50,
+    "hours_to_stockout": 200,
+    "primary_supplier": {
+      "name": "Punctual Sourcing Co",
+      "delay_days": 5,
+      "reliability_score": 0.88,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "Express Mfg Ltd", "lead_time_days": 3, "unit_cost_pct_baseline": 1.15, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Overdue Industries", "tier": "PLATINUM", "hours_to_deadline": 0}
+    ],
+    "price_spike_pct": 0.03
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "emergency_spot_buy"],
+    "acceptable_suppliers": ["Express Mfg Ltd"],
+    "severity": "CRITICAL",
+    "confidence_range": ["HIGH"],
+    "swing_condition_keyword_hints": ["0", "deadline", "expired", "PLATINUM", "now"]
+  },
+  "rubric_notes": "Customer hours_to_deadline = 0 — the deadline is NOW. Schema allows this (Field ge=0). Rule 3 fires: PLATINUM at 0h is unambiguously <24h imminent. Stock cover (200h) is comfortable in absolute terms but the customer deadline has already arrived — fulfilling THIS order from current stock means it ships today. The question 'can we deliver today?' depends on logistics outside the pipeline's view. The eval question: does the system understand 0h as 'urgent / already due' rather than treating 0 as missing data or boundary corner case? Specific failure modes: (a) Arbiter reports the order as 'overdue' but doesn't escalate severity, (b) confidence reported low because 0h feels like an error, (c) recommendation defaults to wait given the comfortable stock cover (200h) and not the customer urgency. Severity CRITICAL via PLATINUM-at-imminent rule. Confidence HIGH because the situation is unambiguous despite the unusual input."
+}

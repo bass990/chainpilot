@@ -1,0 +1,41 @@
+{
+  "id": "scenario_029",
+  "name": "Distribution shift: 10 alternative suppliers (mock_data normally has 1-3)",
+  "tier": "distribution_shift",
+  "input": {
+    "sku": "SKU-CC2900",
+    "stock_pct": 0.30,
+    "hours_to_stockout": 96,
+    "primary_supplier": {
+      "name": "Standard Continental",
+      "delay_days": 5,
+      "reliability_score": 0.84,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "Alt-01 Mfg",   "lead_time_days": 3, "unit_cost_pct_baseline": 1.10, "uncertainty": "LOW"},
+      {"name": "Alt-02 Mfg",   "lead_time_days": 4, "unit_cost_pct_baseline": 1.12, "uncertainty": "MEDIUM"},
+      {"name": "Alt-03 Mfg",   "lead_time_days": 3, "unit_cost_pct_baseline": 1.15, "uncertainty": "LOW"},
+      {"name": "Alt-04 Mfg",   "lead_time_days": 6, "unit_cost_pct_baseline": 1.09, "uncertainty": "MEDIUM"},
+      {"name": "Alt-05 Mfg",   "lead_time_days": 5, "unit_cost_pct_baseline": 1.13, "uncertainty": "HIGH"},
+      {"name": "Alt-06 Mfg",   "lead_time_days": 4, "unit_cost_pct_baseline": 1.20, "uncertainty": "LOW"},
+      {"name": "Alt-07 Mfg",   "lead_time_days": 7, "unit_cost_pct_baseline": 1.07, "uncertainty": "MEDIUM"},
+      {"name": "Alt-08 Mfg",   "lead_time_days": 3, "unit_cost_pct_baseline": 1.18, "uncertainty": "HIGH"},
+      {"name": "Alt-09 Mfg",   "lead_time_days": 5, "unit_cost_pct_baseline": 1.11, "uncertainty": "LOW"},
+      {"name": "Alt-10 Mfg",   "lead_time_days": 4, "unit_cost_pct_baseline": 1.14, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Diversified Manufacturing", "tier": "GOLD", "hours_to_deadline": 80}
+    ],
+    "price_spike_pct": 0.05
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "partial_order"],
+    "acceptable_suppliers": ["Alt-01 Mfg", "Alt-03 Mfg", "Alt-09 Mfg", "Alt-06 Mfg"],
+    "severity": "HIGH",
+    "confidence_range": ["HIGH", "MEDIUM"],
+    "swing_condition_keyword_hints": ["alternatives", "composite", "ranking", "top"]
+  },
+  "rubric_notes": "Rule 2 fires (delay 120h > 96h cover, has_alt). The distribution shift is the COUNT of alternatives — mock_data.py normally surfaces 1-3 alts; here there are 10. The eval question: does the system (a) rank all 10 cleanly using a composite score and pick from the top, (b) get distracted and pick arbitrarily, or (c) ignore some of the alternatives entirely? The acceptable_suppliers list includes the 4 strongest alts by my composite scoring (LOW uncertainty + competitive lead/cost): Alt-01 (3d/1.10/LOW), Alt-03 (3d/1.15/LOW), Alt-06 (4d/1.20/LOW), Alt-09 (5d/1.11/LOW). Picking Alt-04 (MEDIUM, 6d) or Alt-05 (HIGH, 5d) would be a defensible-but-suboptimal choice. Severity HIGH via delay > cover."
+}

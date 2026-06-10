@@ -1,0 +1,30 @@
+{
+  "id": "scenario_028",
+  "name": "Adversarial: pathological numerics — 365-day primary delay (essentially permanent)",
+  "tier": "adversarial",
+  "input": {
+    "sku": "SKU-BB2800",
+    "stock_pct": 0.80,
+    "hours_to_stockout": 1000,
+    "primary_supplier": {
+      "name": "Insolvent Primary Sourcing",
+      "delay_days": 365,
+      "reliability_score": 0.45,
+      "uncertainty": "HIGH"
+    },
+    "alternative_suppliers": [
+      {"name": "RegularChoice Mfg", "lead_time_days": 5, "unit_cost_pct_baseline": 1.12, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [],
+    "price_spike_pct": 0.08
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch"],
+    "acceptable_suppliers": ["RegularChoice Mfg"],
+    "severity": "HIGH",
+    "confidence_range": ["HIGH"],
+    "swing_condition_keyword_hints": ["365", "permanent", "insolvent", "structural"]
+  },
+  "rubric_notes": "365-day primary delay = effectively permanent supplier failure (insolvency, regulatory shutdown, etc.). Stock cover (1000h ≈ 42 days) is comfortable in absolute terms but is two-orders-of-magnitude smaller than the delay. Rule 2 fires immediate_switch (delay 8760h >> 1000h, has_alt). The eval question: does the LLM pipeline handle extreme magnitudes sensibly, or does the number become 'just a big number' that doesn't drive urgency? Specific failure modes to watch: (a) the Arbiter underestimating the 365-day delay's severity because the stock cover (1000h) sounds 'fine', (b) confidence inappropriately low because the situation seems 'unusual', (c) recommendation to wait_and_monitor based on the comfortable stock cover. A correct response treats 365 days as 'structurally compromised' and recommends a clean switch. Severity HIGH despite no customer orders at risk — the situation is structural rather than urgent. No customers in this scenario is a deliberate adversarial cue: easy to be lulled into wait_and_monitor by 'nothing immediate.'"
+}

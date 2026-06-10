@@ -1,0 +1,32 @@
+{
+  "id": "scenario_012",
+  "name": "Ambiguous: delay 8d exceeds 5d cover + alt has MEDIUM uncertainty (partial-vs-full hedge)",
+  "tier": "ambiguous",
+  "input": {
+    "sku": "SKU-L1200",
+    "stock_pct": 0.25,
+    "hours_to_stockout": 120,
+    "primary_supplier": {
+      "name": "EastBay Components",
+      "delay_days": 8,
+      "reliability_score": 0.78,
+      "uncertainty": "MEDIUM"
+    },
+    "alternative_suppliers": [
+      {"name": "Decisive Alt Ltd", "lead_time_days": 3, "unit_cost_pct_baseline": 1.15, "uncertainty": "MEDIUM"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Harbor Manufacturing", "tier": "GOLD", "hours_to_deadline": 96}
+    ],
+    "price_spike_pct": 0.07
+  },
+  "expected": {
+    "action_class": "immediate_switch",
+    "acceptable_actions": ["immediate_switch", "partial_order"],
+    "acceptable_suppliers": ["Decisive Alt Ltd"],
+    "severity": "HIGH",
+    "confidence_range": ["MEDIUM"],
+    "swing_condition_keyword_hints": ["uncertainty", "MEDIUM", "GOLD", "test", "partial"]
+  },
+  "rubric_notes": "Delay (192h = 8 days) exceeds cover (120h) — Rule 2 fires immediate_switch. But Decisive Alt's MEDIUM uncertainty makes a full commitment risky; partial_order is a defensible alternative — order partial volume to test the supplier while keeping primary as the fallback if it recovers. GOLD customer deadline 96h < 192h delay → at material risk. Severity HIGH (delay > cover + GOLD at risk). Confidence MEDIUM because the partial-vs-full call is a genuine tradeoff. The swing_condition should articulate: 'if Decisive Alt's reliability is better than feared, full switch is best; if their delivery slips, partial protects the downside.'"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "scenario_013",
+  "name": "Ambiguous: PLATINUM at 36h deadline + comfortable stock cover + reliable alt (act-vs-wait)",
+  "tier": "ambiguous",
+  "input": {
+    "sku": "SKU-M1300",
+    "stock_pct": 0.50,
+    "hours_to_stockout": 240,
+    "primary_supplier": {
+      "name": "Heartland Industrial",
+      "delay_days": 5,
+      "reliability_score": 0.89,
+      "uncertainty": "LOW"
+    },
+    "alternative_suppliers": [
+      {"name": "Riverstone Mfg", "lead_time_days": 3, "unit_cost_pct_baseline": 1.18, "uncertainty": "LOW"}
+    ],
+    "customer_orders_at_risk": [
+      {"customer": "Sentinel Defense", "tier": "PLATINUM", "hours_to_deadline": 36}
+    ],
+    "price_spike_pct": 0.02
+  },
+  "expected": {
+    "action_class": "partial_order",
+    "acceptable_actions": ["partial_order", "immediate_switch", "wait_and_monitor"],
+    "acceptable_suppliers": ["Riverstone Mfg"],
+    "severity": "HIGH",
+    "confidence_range": ["MEDIUM", "LOW"],
+    "swing_condition_keyword_hints": ["PLATINUM", "Sentinel", "36", "deadline"]
+  },
+  "rubric_notes": "PLATINUM customer at 36h deadline — NOT <24h, so Rule 3 doesn't fire (rule 3 is for the within-24h panic). Stock cover (240h) >> delay (120h) — no catastrophic trigger. But PLATINUM at 36h is real exposure: their order is fulfillable from current stock with no margin for error. Rule 5 fires: PLATINUM at material risk (36 < 120) + reliable LOW alt → partial_order canonical. Three actions are defensible: wait_and_monitor (cover is comfortable; PLATINUM order fulfills from stock as long as primary doesn't slip further), immediate_switch (insurance for the PLATINUM relationship outweighs the 18% premium), partial_order (hedge — split the order so a slip doesn't lose the customer). Severity HIGH per §3 'HIGH-tier customer at risk in <48h'. Confidence MEDIUM if the Arbiter surfaces the tradeoff cleanly; LOW if it acknowledges the three-way ambiguity. This is the centerpiece scenario for testing swing_condition quality."
+}
