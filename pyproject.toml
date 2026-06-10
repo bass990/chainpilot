@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chainpilot"
+version = "0.2.0"
+description = "Multi-agent supply-chain disruption response with adversarial deliberation, asymmetric trust calibration, and uncertainty modeling"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Mamadou Bassirou Diallo" },
+]
+
+# Runtime deps — kept consistent with chainpilot/requirements.txt for HF Spaces.
+# The chainpilot/requirements.txt is preserved as the source of truth for the
+# Spaces deploy; this pyproject.toml mirrors it plus dev tooling.
+dependencies = [
+    "anthropic>=0.40.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "python-dotenv>=1.0.0",
+    # Day-2: explicit pydantic dep for eval/schemas.py scenario validation.
+    # FastAPI also pulls pydantic in transitively, but pinning it here is the
+    # honest "what does this project actually depend on" answer.
+    "pydantic>=2.8",
+]
+
+[project.optional-dependencies]
+# Eval-harness dev deps: scorers, instrumentation, pipeline unit tests.
+# Not bundled into the runtime image (no point shipping pytest to a Streamlit Space).
+dev = [
+    "pytest>=8.3",
+    "pytest-mock>=3.14",
+    "ruff>=0.7",
+]
+
+# Future deps that the eval may pull in (kept commented until needed):
+#   - "pydantic>=2.8" for scenario validation
+#   - "rich>=13" for prettier eval reports
+#   - "pandas>=2.2" if we move to DataFrame-based scoring
+
+[project.urls]
+Repository = "https://github.com/bass990/chainpilot"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["chainpilot*", "eval*"]

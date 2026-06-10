@@ -1,0 +1,22 @@
+# Ruff configuration for ChainPilot — matches the lint discipline used across
+# the broader portfolio (NBA, P1) so CI behavior is consistent.
+
+line-length = 120
+target-version = "py310"
+
+[lint]
+# Default rule set catches real bugs (unused imports, undefined names).
+# Ignored: stylistic preferences that match the codebase's compact style.
+#   E401 — `import json, sys, os` on one line (used throughout chainpilot/backend/)
+#   E701 — `if cond: body` on one line
+#   E702 — `stmt; stmt` on one line
+#   E501 — line-too-long
+ignore = ["E401", "E701", "E702", "E501"]
+
+[lint.per-file-ignores]
+# Tests use bare asserts and may import extras for setup
+"tests/**" = ["S101"]
+
+# Existing chainpilot/backend/agent.py uses sys.path manipulation as a known
+# pre-eval pattern; don't fight it in lint until refactor happens
+"chainpilot/backend/agent.py" = ["E402"]

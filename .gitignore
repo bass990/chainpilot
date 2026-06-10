@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtualenvs
+.venv/
+venv/
+env/
+chainpilot/.venv/
+
+# Caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Build artifacts
+*.egg-info/
+build/
+dist/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node
+chainpilot/frontend/node_modules/
+chainpilot/frontend/dist/
+chainpilot/frontend/.vite/
+
+# Secrets — NEVER commit credentials
+.env
+.env.*
+!.env.example
+*.key
+service-account*.json
+
+# ChainPilot runtime state (auto-created, regeneratable, not portfolio-relevant)
+chainpilot/backend/trust_ledger.json
+chainpilot/backend/supplier_knowledge.json
+
+# Eval reports — keep markdown reports, ignore intermediate JSON
+eval/reports/*.json
+!eval/reports/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dev-history files in the existing chainpilot/ folder — keep them locally,
+# don't commit (they're internal scratch from the project's build history).
+# Comment out the next line if you want to keep these in version control.
+chainpilot/changes_*.md

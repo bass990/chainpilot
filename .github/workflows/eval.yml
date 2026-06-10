@@ -1,0 +1,64 @@
+name: Eval (manual-trigger only)
+
+# This workflow runs the full ChainPilot eval harness against Claude.
+# It is MANUALLY TRIGGERED via the Actions tab — it is NOT auto-run on push,
+# because each run costs real LLM-API money.
+#
+# Setup before first run:
+#   1. In repo Settings → Secrets and variables → Actions, add a repository secret:
+#         ANTHROPIC_API_KEY = sk-ant-...
+#   2. Trigger the workflow: Actions tab → "Eval (manual-trigger only)" → Run workflow.
+#
+# Typical cost per run: $14-43 (40 scenarios × 2 branches × 3 reps × ~6 LLM calls).
+# Typical wall-clock: 10-15 minutes (rate limits dominate).
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Eval mode: small (5 scenarios, ~\\$1) or full (40 scenarios, ~\\$14-43)"
+        required: true
+        default: "small"
+        type: choice
+        options:
+          - small
+          - full
+
+jobs:
+  run-eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run eval (${{ github.event.inputs.mode }})
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ "${{ github.event.inputs.mode }}" = "small" ]; then
+            make eval-small
+          else
+            make eval
+          fi
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report-${{ github.run_id }}
+          path: eval/reports/
+          retention-days: 30
